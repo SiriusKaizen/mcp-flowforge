@@ -1,0 +1,37 @@
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+
+const root = process.cwd();
+const templatesDir = path.join(root, "templates");
+const forbidden = [/api[_-]?key\s*[:=]\s*[A-Za-z0-9]/i, /bearer\s+[A-Za-z0-9._-]{8,}/i, /xox[baprs]-/i, /gh[pousr]_/i, /sk-[A-Za-z0-9_-]{20,}/i];
+
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+function validateWorkflow(filePath) {
+  const raw = fs.readFileSync(filePath, "utf8");
+  for (const pattern of forbidden) {
+    assert(!pattern.test(raw), `${filePath} appears to contain a secret-like value`);
+  }
+
+  const workflow = JSON.parse(raw);
+  assert(typeof workflow.name === "string" && workflow.name.length > 0, "workflow.name is required");
+  assert(Array.isArray(workflow.nodes) && workflow.nodes.length > 0, "workflow.nodes must be non-empty");
+  assert(typeof workflow.connections === "object" && workflow.connections !== null, "workflow.connections is required");
+}
+
+const files = fs
+  .readdirSync(templatesDir)
+  .filter((name) => name.endsWith(".json"))
+  .map((name) => path.join(templatesDir, name));
+
+assert(files.length > 0, "expected at least one template");
+for (const file of files) {
+  validateWorkflow(file);
+}
+
+console.log(`validated ${files.length} template file(s)`);

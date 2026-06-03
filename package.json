@@ -1,0 +1,9 @@
+{
+  "name": "mcp-flowforge",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/validate-templates.mjs"
+  }
+}
