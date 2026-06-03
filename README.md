@@ -20,6 +20,14 @@ node scripts/validate-templates.mjs
 node mock/mcp-webhook-server.mjs
 ```
 
+Send a local test payload:
+
+```bash
+curl -sS http://127.0.0.1:8787/mcp-flowforge-demo \
+  -H 'content-type: application/json' \
+  -d '{"intent":"demo"}'
+```
+
 ## Safety
 
 Templates use placeholder values only. Do not commit live credentials, bot tokens, OAuth files, or production webhook secrets.
