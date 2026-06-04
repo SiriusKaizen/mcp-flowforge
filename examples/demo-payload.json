@@ -1,0 +1,7 @@
+{
+  "intent": "demo",
+  "source": "local-example",
+  "metadata": {
+    "safe": true
+  }
+}

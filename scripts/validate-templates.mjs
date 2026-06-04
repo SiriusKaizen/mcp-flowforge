@@ -4,6 +4,7 @@ import process from "node:process";
 
 const root = process.cwd();
 const templatesDir = path.join(root, "templates");
+const examplesDir = path.join(root, "examples");
 const forbidden = [/api[_-]?key\s*[:=]\s*[A-Za-z0-9]/i, /bearer\s+[A-Za-z0-9._-]{8,}/i, /xox[baprs]-/i, /gh[pousr]_/i, /sk-[A-Za-z0-9_-]{20,}/i];
 
 function assert(condition, message) {
@@ -24,6 +25,15 @@ function validateWorkflow(filePath) {
   assert(typeof workflow.connections === "object" && workflow.connections !== null, "workflow.connections is required");
 }
 
+function validateExample(filePath) {
+  const raw = fs.readFileSync(filePath, "utf8");
+  for (const pattern of forbidden) {
+    assert(!pattern.test(raw), `${filePath} appears to contain a secret-like value`);
+  }
+  const payload = JSON.parse(raw);
+  assert(typeof payload === "object" && payload !== null && !Array.isArray(payload), "example payload must be a JSON object");
+}
+
 const files = fs
   .readdirSync(templatesDir)
   .filter((name) => name.endsWith(".json"))
@@ -34,4 +44,15 @@ for (const file of files) {
   validateWorkflow(file);
 }
 
-console.log(`validated ${files.length} template file(s)`);
+const examples = fs.existsSync(examplesDir)
+  ? fs
+      .readdirSync(examplesDir)
+      .filter((name) => name.endsWith(".json"))
+      .map((name) => path.join(examplesDir, name))
+  : [];
+
+for (const file of examples) {
+  validateExample(file);
+}
+
+console.log(`validated ${files.length} template file(s) and ${examples.length} example payload(s)`);

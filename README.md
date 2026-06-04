@@ -25,7 +25,7 @@ Send a local test payload:
 ```bash
 curl -sS http://127.0.0.1:8787/mcp-flowforge-demo \
   -H 'content-type: application/json' \
-  -d '{"intent":"demo"}'
+  --data @examples/demo-payload.json
 ```
 
 ## Safety
