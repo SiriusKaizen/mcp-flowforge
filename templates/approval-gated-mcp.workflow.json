@@ -1,11 +1,11 @@
 {
-  "name": "MCP FlowForge Safe Webhook Starter",
+  "name": "MCP FlowForge Approval Gate Starter",
   "metadata": {
-    "purpose": "Local webhook starter that echoes safe demo payloads without external dispatch.",
+    "purpose": "Webhook starter for workflows that must stop for human approval before tool dispatch.",
     "safety": {
-      "authority": "read-only",
-      "risk": "low",
-      "requiredApproval": false,
+      "authority": "approval-required",
+      "risk": "medium",
+      "requiredApproval": true,
       "dryRunOnly": true,
       "blocksExternalDispatch": true
     }
@@ -14,54 +14,54 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "mcp-flowforge-demo",
+        "path": "mcp-flowforge-approval",
         "responseMode": "responseNode"
       },
-      "id": "webhook-input",
-      "name": "Webhook Input",
+      "id": "approval-webhook-input",
+      "name": "Approval Webhook Input",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [240, 300]
     },
     {
       "parameters": {
-        "jsCode": "return [{ json: { ok: true, receivedAt: new Date().toISOString(), safeEcho: $json.intent || 'demo' } }];"
+        "jsCode": "const requestedAction = $json.action || 'demo-action'; const risk = $json.risk || 'medium'; return [{ json: { ok: false, status: 'approval_required', requestedAction, risk, dryRunOnly: true, nextStep: 'Review this request before connecting a real MCP tool.' } }];"
       },
-      "id": "safe-transform",
-      "name": "Safe Transform",
+      "id": "approval-gate",
+      "name": "Approval Gate",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 300]
+      "position": [480, 300]
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ $json }}"
       },
-      "id": "webhook-response",
-      "name": "Webhook Response",
+      "id": "approval-response",
+      "name": "Approval Response",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [680, 300]
+      "position": [720, 300]
     }
   ],
   "connections": {
-    "Webhook Input": {
+    "Approval Webhook Input": {
       "main": [
         [
           {
-            "node": "Safe Transform",
+            "node": "Approval Gate",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Safe Transform": {
+    "Approval Gate": {
       "main": [
         [
           {
-            "node": "Webhook Response",
+            "node": "Approval Response",
             "type": "main",
             "index": 0
           }

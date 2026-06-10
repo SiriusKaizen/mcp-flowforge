@@ -1,0 +1,9 @@
+{
+  "action": "summarize-local-report",
+  "risk": "medium",
+  "source": "local-demo",
+  "metadata": {
+    "containsSecrets": false,
+    "requiresHumanApproval": true
+  }
+}
