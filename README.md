@@ -35,6 +35,10 @@ Templates use placeholder values only. Do not commit live credentials, bot token
 
 The approval-gated starter intentionally stops at a mock response. Use it as a pattern for workflows where a human must review the request before a real MCP tool, provider call, message send, or writeback runs.
 
+## Real-World Use Case
+
+This project is for people prototyping local automation flows that connect webhooks, n8n, and MCP-style tools. The templates favor dry-run behavior, explicit approval gates, and placeholder-only examples so a maintainer can test workflow shape before connecting real credentials or external actions.
+
 ## License
 
 MIT
